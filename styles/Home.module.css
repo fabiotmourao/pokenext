@@ -21,24 +21,26 @@
     flex-wrap: wrap;
     justify-content: center; 
     align-items: center;
-    gap: 20px; 
+    gap: 20px;
     max-width: 1100px;
     margin: 0 auto;
-    padding-top: 2rem; 
+    padding-top: 2rem;
+    min-height: 60vh; 
 }
 
 .pokemon_container::after {
     content: "";
     flex: 1 1 250px; 
+    max-width: 250px; 
 }
 
 @media (max-width: 768px) {
     .pokemon_container {
-        justify-content: center; 
+        justify-content: center;
     }
     
     .pokemon_container::after {
-        flex: 1 1 100%; 
+        flex: 1 1 100%;
     }
 }
 
@@ -49,7 +51,7 @@
     margin-top: 2em;
     gap: 1em;
     width: 100%;
-    padding-bottom: 2rem;
+    padding-bottom: 3rem; 
 }
 
 .page_button {
