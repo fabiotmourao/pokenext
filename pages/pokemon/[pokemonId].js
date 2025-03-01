@@ -1,25 +1,47 @@
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 import styles from '../../styles/Pokemon.module.css';
 
 export async function getStaticPaths() {
   return {
     paths: [{ params: { pokemonId: '1' } }],
-    fallback: 'blocking',
+    fallback: true, // Permite fallback para carregamento dinâmico
   };
 }
 
 export async function getStaticProps({ params }) {
-  const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${params.pokemonId}`);
-  const data = await res.json();
+  try {
+    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${params.pokemonId}`);
+    const data = await res.json();
 
-  return {
-    props: {
-      pokemon: data,
-    },
-  };
+    return {
+      props: {
+        pokemon: data,
+      },
+    };
+  } catch (error) {
+    return {
+      notFound: true, // Exibe erro 404 caso falhe
+    };
+  }
 }
 
 export default function PokemonPage({ pokemon }) {
+  const router = useRouter();
+
+  if (router.isFallback) {
+    return (
+      <div className={styles.loading_container}>
+        <div className={styles.spinner}></div>
+        <p className={styles.loading_text}>Carregando Pokémon...</p>
+      </div>
+    );
+  }
+
+  if (!pokemon) {
+    return <p className={styles.error_message}>Erro ao carregar o Pokémon.</p>;
+  }
+
   const primaryType = pokemon.types?.[0]?.type.name || "normal";
 
   return (
@@ -74,14 +96,13 @@ export default function PokemonPage({ pokemon }) {
         </div>
       </div>
 
-      {/* Estatísticas estilizadas */}
       <div className={styles.stats_container}>
         <h3>Estatísticas:</h3>    
         <div className={styles.stats_grid}>
           {pokemon.stats.map((item) => (
             <div key={item.stat.name} className={styles.progress_bar}>
               <span className={styles.stat_name}>{item.stat.name}</span>
-              <span className={styles.stat_value}>{item.base_stat}</span>
+              <span className={styles.stat_value}> {item.base_stat}</span>
               <div className={styles.progress}>
                 <div
                   className={styles.progress_fill}
